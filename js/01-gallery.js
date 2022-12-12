@@ -1,7 +1,6 @@
 import { galleryItems } from './gallery-items.js';
 
 let selectedImage;
-const body = document.body;
 const gallery = document.querySelector('.gallery');
 const galleryHtmlText = galleryItems
   .map(
@@ -16,7 +15,6 @@ const galleryHtmlText = galleryItems
 gallery.insertAdjacentHTML('beforeend', galleryHtmlText);
 
 gallery.addEventListener('click', openImage);
-body.addEventListener('keydown', closeImage);
 
 function openImage(event) {
   event.preventDefault();
@@ -24,8 +22,17 @@ function openImage(event) {
   if (target.nodeName !== 'IMG') {
     return;
   }
+
   selectedImage = basicLightbox.create(
-    `<img src=${target.dataset.source} alt=${target.alt} width="800" height="600" />`
+    `<img src=${target.dataset.source} alt=${target.alt} width="800" height="600" />`,
+    {
+      onShow: selectedImage => {
+        document.addEventListener('keydown', closeImage);
+      },
+      onClose: selectedImage => {
+        document.removeEventListener('keydown', closeImage);
+      },
+    }
   );
   selectedImage.show();
 }
